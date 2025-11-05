@@ -1,0 +1,26 @@
+In the same solution folder
+
+dotnet ef migrations add InitialCreate \
+    --project src/FCG_MS_User.Infrastructure \
+    --startup-project src/FCG_MS_User.Api \
+    --output-dir Persistence/Migrations
+
+dotnet ef database update \
+    --project src/FCG_MS_User.Infrastructure \
+    --startup-project src/FCG_MS_User.Api
+    
+dotnet ef migrations add MoveToGamePlatformSchema \
+    --project src/FCG_MS_User.Infrastructure \
+    --startup-project src/FCG_MS_User.Api \
+    --output-dir Persistence/Migrations
+
+
+
+docker-compose up -d
+
+docker-compose down
+
+Rebuild and restart your API container
+docker-compose up -d --build
+
+

@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+	
+	<ItemGroup>
+		<PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="8.0.0" />
+		<PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.1.2" />
+	</ItemGroup>
+	
+  <ItemGroup>
+    <ProjectReference Include="..\FCG_MS_Users.Domain\FCG_MS_Users.Domain.csproj" />
+    <ProjectReference Include="..\FCG_MS_Users.Infrastructure\FCG_MS_Users.Infrastructure.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,12 @@
+#Agent Infra New Relic
+docker run \
+-d \
+--name newrelic-infra \
+--network=user_network \
+--cap-add=SYS_PTRACE \
+--privileged \
+--pid=host \
+-v "/:/host:ro" \
+-v "/var/run/docker.sock:/var/run/docker.sock" \
+-e NRIA_LICENSE_KEY=7684869377f4b5d6e688fcc15ad9abd7FFFFNRAL \
+newrelic/infrastructure:latest

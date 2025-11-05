@@ -1,0 +1,78 @@
+name: CD - Deploy Docker no Amazon ECR
+
+on:
+  push:
+    branches:
+      - master #trocar para master quando estiver configurado o ECR
+jobs:
+  deploy:
+    name: Buildar e enviar imagem para o ECR
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout do repositório
+      uses: actions/checkout@v4
+
+    - name: Configurar AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ secrets.AWS_REGION }}
+
+    - name: Login no ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v2
+
+    - name: Build da imagem Docker
+      run: |
+        docker build -t fcg-user .
+
+    - name: Tag para o ECR
+      run: |
+        docker tag fcg-user:latest ${{ secrets.ECR_REPOSITORY }}:latest
+
+    - name: Push no ECR
+      run: |
+        docker push ${{ secrets.ECR_REPOSITORY }}:latest
+
+    - name: Configurar o kubectl
+      uses: azure/setup-kubectl@v3
+      with:
+        version: 'latest'
+        
+    - name: Obter credenciais do cluster EKS
+      run: |
+        aws eks update-kubeconfig --region ${{ secrets.AWS_REGION }} --name ${{ secrets.EKS_CLUSTER_NAME }}
+ 
+    - name: Debug - Testar conexão EKS
+      run: |
+        echo "Testando conexão com o cluster..."
+        kubectl cluster-info
+        kubectl get nodes          
+
+    - name: Criar ou atualizar Kubernetes Secret
+      run: |
+        kubectl create secret generic fcg-ms-user-secret \
+          --from-literal=ConnectionStrings__DefaultConnection="${{ secrets.USER_DB_CONNECTION }}" \
+          --from-literal=UserNotification__Uri="${{ secrets.USER_NOTIFICATION_URI }}" \
+          --dry-run=client -o yaml | kubectl apply -f - --validate=false
+
+
+    #- name: Aplicar Deployment no EKS
+    #  run: |
+    #    # Primeiro aplicar os manifestos
+    #    kubectl apply -f k8s/ --validate=false
+    #    # Depois fazer rollout restart para pegar nova imagem
+    #    kubectl rollout restart deployment/users-deployment --namespace default
+    #    kubectl rollout status deployment/users-deployment --namespace default
+
+    - name: Aplicar Deployment no EKS
+      run: |
+        # Substituir placeholder pela imagem real
+        sed -i "s|PLACEHOLDER_ECR_REPOSITORY|${{ secrets.ECR_REPOSITORY }}|g" k8s/deployment.yaml
+        # Aplicar manifestos
+        kubectl apply -f k8s/ --validate=false
+        # Verificar status
+        kubectl rollout status deployment/users-deployment --namespace default
+

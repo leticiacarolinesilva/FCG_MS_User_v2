@@ -1,0 +1,12 @@
+-- Enable UUID extension
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
+-- Create schema
+CREATE SCHEMA IF NOT EXISTS fcg_user;
+
+-- Set default permissions
+ALTER DEFAULT PRIVILEGES IN SCHEMA fcg_user
+GRANT ALL ON TABLES TO users;
+
+ALTER DEFAULT PRIVILEGES IN SCHEMA fcg_user
+GRANT ALL ON SEQUENCES TO users;
