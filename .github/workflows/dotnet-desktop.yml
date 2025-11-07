@@ -76,3 +76,11 @@ jobs:
           --from-literal=ConnectionStrings__DefaultConnection="${{ secrets.USER_DB_CONNECTION }}" \
           --from-literal=UserNotification__Uri="${{ secrets.USER_NOTIFICATION_URI }}" \
           --dry-run=client -o yaml | kubectl apply -f -
+    - name: Aplicar Deployment no EKS
+      run: |
+        # Substituir placeholder pela imagem real
+        sed -i "s|PLACEHOLDER_ECR_REPOSITORY|${{ secrets.ECR_REPOSITORY }}|g" k8s/deployment.yaml
+        # Aplicar manifestos
+        kubectl apply -f k8s/ --validate=false
+        # Verificar status
+        kubectl rollout status deployment/users-deployment --namespace default
