@@ -56,7 +56,7 @@ NEW_RELIC_APPLICATION_LOGGING_LOCAL_DECORATING_ENABLED=false
 
 # Set environment variables
 ENV ASPNETCORE_ENVIRONMENT=Production
-ENV ASPNETCORE_URLS=http://+:80
+ENV ASPNETCORE_URLS=http://+:8080
 
 # Copy the published app
 COPY --from=publish /app/publish .
