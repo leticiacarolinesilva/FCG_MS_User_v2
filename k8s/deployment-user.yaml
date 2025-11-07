@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: fcg-ms-user
-          image: 773016904081.dkr.ecr.us-east-1.amazonaws.com/users:latest
+          image: 399668701651.dkr.ecr.us-east-1.amazonaws.com/fcg-user:latest
           ports:
             - containerPort: 80
           env:
