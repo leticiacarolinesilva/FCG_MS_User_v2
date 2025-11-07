@@ -2,7 +2,7 @@ name: Deploy to EKS
 
 on:
   push:
-    branches: [ main ]
+    branches: [ master ]
 
 permissions:
   id-token: write   # OBRIGATÓRIO
@@ -13,6 +13,32 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
+    - name: Checkout do repositório
+      uses: actions/checkout@v4
+
+    - name: Configurar AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ secrets.AWS_REGION }}
+
+    - name: Login no ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v2
+
+    - name: Build da imagem Docker
+      run: |
+        docker build -t fcg-user .
+
+    - name: Tag para o ECR
+      run: |
+        docker tag fcg-user:latest ${{ secrets.ECR_REPOSITORY }}:latest
+
+    - name: Push no ECR
+      run: |
+        docker push ${{ secrets.ECR_REPOSITORY }}:latest
+
     - name: Checkout code
       uses: actions/checkout@v4
 
