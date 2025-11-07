@@ -66,7 +66,7 @@ RUN adduser --disabled-password --gecos "" appuser && chown -R appuser /app
 USER appuser
 
 # Expose port 80
-EXPOSE 80
+EXPOSE 8080
 
 # Set the entry point
 ENTRYPOINT ["dotnet", "FCG_MS_Users.Api.dll"]
