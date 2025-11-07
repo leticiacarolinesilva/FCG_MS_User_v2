@@ -36,14 +36,32 @@ jobs:
       run: |
         docker push ${{ secrets.ECR_REPOSITORY }}:latest
 
+    - name: Configurar credenciais AWS
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ secrets.AWS_REGION }}
+
     - name: Configurar o kubectl
       uses: azure/setup-kubectl@v3
       with:
         version: 'latest'
+
+    - name: Verificar credenciais AWS
+      run: |
+        echo "Verificando credenciais AWS..."
+        aws sts get-caller-identity
         
     - name: Obter credenciais do cluster EKS
       run: |
         aws eks update-kubeconfig --region ${{ secrets.AWS_REGION }} --name ${{ secrets.EKS_CLUSTER_NAME }}
+
+    - name: Debug - Verificar configuração kubectl
+      run: |
+        echo "Verificando configuração do kubectl..."
+        kubectl config current-context
+        kubectl config view --minify  
  
     - name: Debug - Testar conexão EKS
       run: |
