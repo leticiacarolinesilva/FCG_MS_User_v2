@@ -1,0 +1,57 @@
+name: Deploy to EKS
+
+on:
+  push:
+    branches: [ master ]
+
+permissions:
+  id-token: write   # Necessário para OIDC
+  contents: read    # Necessário para checkout
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Configurar credenciais AWS via OIDC
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        role-to-assume: arn:aws:iam::399668701651:role/GitHubActionsEKSRole
+        aws-region: ${{ secrets.AWS_REGION }}
+        role-session-name: GitHubActionsSession
+
+    - name: Verificar credenciais AWS
+      run: |
+        echo "Verificando credenciais AWS..."
+        aws sts get-caller-identity
+
+    - name: Configurar o kubectl
+      uses: azure/setup-kubectl@v3
+      with:
+        version: 'latest'
+        
+    - name: Obter credenciais do cluster EKS
+      run: |
+        echo "Configurando kubeconfig..."
+        aws eks update-kubeconfig --region ${{ secrets.AWS_REGION }} --name ${{ secrets.EKS_CLUSTER_NAME }}
+        
+    - name: Debug - Verificar configuração kubectl
+      run: |
+        echo "Verificando configuração do kubectl..."
+        kubectl config current-context
+        
+    - name: Debug - Testar conexão EKS
+      run: |
+        echo "Testando conexão com o cluster..."
+        kubectl cluster-info
+        kubectl get nodes          
+
+    - name: Criar ou atualizar Kubernetes Secret
+      run: |
+        kubectl create secret generic fcg-ms-user-secret \
+          --from-literal=ConnectionStrings__DefaultConnection="${{ secrets.USER_DB_CONNECTION }}" \
+          --from-literal=UserNotification__Uri="${{ secrets.USER_NOTIFICATION_URI }}" \
+          --dry-run=client -o yaml | kubectl apply -f -
