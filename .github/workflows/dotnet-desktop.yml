@@ -2,11 +2,11 @@ name: Deploy to EKS
 
 on:
   push:
-    branches: [ master ]
+    branches: [ main ]
 
 permissions:
-  id-token: write   # Necessário para OIDC
-  contents: read    # Necessário para checkout
+  id-token: write   # OBRIGATÓRIO
+  contents: read    # OBRIGATÓRIO
 
 jobs:
   deploy:
@@ -37,11 +37,6 @@ jobs:
       run: |
         echo "Configurando kubeconfig..."
         aws eks update-kubeconfig --region ${{ secrets.AWS_REGION }} --name ${{ secrets.EKS_CLUSTER_NAME }}
-        
-    - name: Debug - Verificar configuração kubectl
-      run: |
-        echo "Verificando configuração do kubectl..."
-        kubectl config current-context
         
     - name: Debug - Testar conexão EKS
       run: |
