@@ -36,6 +36,13 @@ jobs:
       run: |
         docker push ${{ secrets.ECR_REPOSITORY }}:latest
 
+    - name: Configurar credenciais AWS via OIDC
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        role-to-assume: arn:aws:iam::399668701651:role/GitHubActionsEKSRole
+        aws-region: ${{ secrets.AWS_REGION }}
+        role-session-name: GitHubActionsSession     
+
     - name: Configurar credenciais AWS
       uses: aws-actions/configure-aws-credentials@v4
       with:
