@@ -79,7 +79,7 @@ jobs:
     - name: Aplicar Deployment no EKS
       run: |
         # Substituir placeholder pela imagem real
-        sed -i "s|PLACEHOLDER_ECR_REPOSITORY|${{ secrets.ECR_REPOSITORY }}|g" k8s/deployment.yaml
+        sed -i "s|PLACEHOLDER_ECR_REPOSITORY|${{ secrets.ECR_REPOSITORY }}|g" k8s/deployment-user.yaml
         # Aplicar manifestos
         kubectl apply -f k8s/ --validate=false
         # Verificar status
