@@ -1,21 +1,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: fcg-ms-user
+  name: fcg-user
   labels:
-    app: fcg-ms-user
+    app: fcg-user
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: fcg-ms-user
+      app: fcg-user
   template:
     metadata:
       labels:
-        app: fcg-ms-user
+        app: fcg-user
     spec:
       containers:
-        - name: fcg-ms-user
+        - name: fcg-user
           image: 399668701651.dkr.ecr.us-east-1.amazonaws.com/fcg-user:latest
           ports:
             - containerPort: 8080
@@ -40,13 +40,13 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: fcg-ms-user-service
+  name: fcg-user-service
   labels:
-    app: fcg-ms-user
+    app: fcg-user
 spec:
   type: LoadBalancer
   selector:
-    app: fcg-ms-user
+    app: fcg-user
   ports:
     - port: 8080
       targetPort: 8080
