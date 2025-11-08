@@ -49,7 +49,7 @@ public class UserService : IUserService
             Permission = AuthorizationPermissions.Admin.ToString(),
         };
 
-        await _userNotificationClient.SendemailAsync(userReponseDto.Email);
+        //await _userNotificationClient.SendemailAsync(userReponseDto.Email);
 
         return userReponseDto;
     }
