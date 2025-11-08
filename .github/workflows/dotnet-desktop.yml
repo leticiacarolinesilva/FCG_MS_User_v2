@@ -80,4 +80,4 @@ jobs:
     - name: Aplicar Deployment no EKS
       run: |
         kubectl apply -f k8s/deployment-user.yaml
-        kubectl rollout status deployment/deployment-user --namespace default
+        kubectl rollout status deployment/fcg-user --namespace default
